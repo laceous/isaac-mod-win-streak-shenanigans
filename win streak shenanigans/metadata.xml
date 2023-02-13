@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <name>Win Streak Shenanigans</name>
+    <directory>win streak shenanigans</directory>
+    <id>2932859748</id>
+    <description>This mod allows you to pretend you're good at the game by easily incrementing your win streak via the debug console. It effectively ends the game multiple times.
+
+Usage:
+[code]
+win-streak +10
+[/code]
+
+The max is limited here to 9999. This fits cleanly into the &quot;Best Streak&quot; space. On a new save file, this takes a couple seconds to complete. On a 100% save file, this can take a couple minutes to complete.
+
+Once complete, a cutscene will play marking the end of your run. View your updated win streak in the menu.
+
+This can unlock items like &quot;Ace of Clubs&quot; (3 win streak).
+
+This mod doesn't work if you're in a challenge or seeded run. You also need to have beaten Mom once.</description>
+    <version>1.1</version>
+    <visibility>Public</visibility>
+    <tag id="Lua"/>
+    <tag id="Tweaks"/>
+</metadata>
