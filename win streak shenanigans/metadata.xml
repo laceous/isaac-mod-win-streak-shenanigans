@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-    <name>Win Streak Shenanigans</name>
+    <name>Win Streak Shenanigans (+Eden Tokens)</name>
     <directory>win streak shenanigans</directory>
     <id>2932859748</id>
     <description>This mod allows you to pretend you're good at the game by easily incrementing your win streak via the debug console. It effectively ends the game multiple times.
@@ -16,8 +16,22 @@ Once complete, a cutscene will play marking the end of your run. View your updat
 
 This can unlock items like &quot;Ace of Clubs&quot; (3 win streak).
 
-This mod doesn't work if you're in a challenge or seeded run. You also need to have beaten Mom once.</description>
-    <version>1.1</version>
+This command doesn't work if you're in a challenge or seeded run. You also need to have beaten Mom once.
+
+[hr][/hr]
+This mod also lets you easily increment your Eden tokens via the debug console.
+
+Usage:
+[code]
+eden-tokens +10
+[/code]
+
+This works by moving you to the Mom's Heart (It Lives) boss fight, triggering the room clear multiple times, and then ending the game. This will also increment your win streak by 1.
+
+This command only works in normal or hard mode, and it can't be a challenge or seeded run. You also need to have beaten Mom once.
+
+This can unlock Eden, and other Mom's Heart related things.</description>
+    <version>1.2</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Tweaks"/>
