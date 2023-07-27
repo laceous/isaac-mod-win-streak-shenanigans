@@ -28,21 +28,26 @@ function mod:onExecuteCmd(cmd, parameters)
     
     print('+0')
   elseif cmd == 'eden-tokens' then
-    if not game:IsGreedMode() and not seeds:IsCustomRun() then -- not greed mode, challenge, or seeded run
+    if not seeds:IsCustomRun() then -- not challenge or seeded run
       if string.len(parameters) >= 2 and string.sub(parameters, 1, 1) == '+' then
         local num = tonumber(string.sub(parameters, 2))
         
         if math.type(num) == 'integer' and num > 0 and num <= max then
-          Isaac.ExecuteCommand('stage 8') -- womb 2
+          if game:IsGreedMode() then
+            Isaac.ExecuteCommand('stage 7') -- ultra greed
+          else
+            Isaac.ExecuteCommand('stage 8') -- womb 2
+          end
           
           level.LeaveDoor = DoorSlot.NO_DOOR_SLOT
-          game:ChangeRoom(level:GetRooms():Get(level:GetLastBossRoomListIndex()).SafeGridIndex, -1) -- mom's heart / it lives
+          game:ChangeRoom(level:GetRooms():Get(level:GetLastBossRoomListIndex()).SafeGridIndex, -1) -- mom's heart / it lives / ultra greed / ultra greedier
           
           for i = 1, num do
             room:TriggerClear(true)
           end
           
-          game:End(3) -- Mom's Heart endings
+          -- 3 = Mom's Heart / 9 = Greed / 19 = Greedier
+          game:End(2)
           
           print('+' .. num)
           return
