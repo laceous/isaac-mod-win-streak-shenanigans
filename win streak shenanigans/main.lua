@@ -46,7 +46,7 @@ function mod:onExecuteCmd(cmd, parameters)
             room:TriggerClear(true)
           end
           
-          -- 3 = Mom's Heart / 9 = Greed / 19 = Greedier
+          -- 3 = Mom's Heart / 9 = Greed / 12 = Greedier
           game:End(2)
           
           print('+' .. num)
