@@ -28,7 +28,7 @@ function mod:onExecuteCmd(cmd, parameters)
     
     print('+0')
   elseif cmd == 'eden-tokens' then
-    if not seeds:IsCustomRun() then -- not challenge or seeded run
+    if not seeds:IsCustomRun() and game:GetVictoryLap() == 0 then -- not challenge, seeded run, or victory lap
       if string.len(parameters) >= 2 and string.sub(parameters, 1, 1) == '+' then
         local num = tonumber(string.sub(parameters, 2))
         
