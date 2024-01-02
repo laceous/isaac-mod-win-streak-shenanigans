@@ -30,8 +30,11 @@ This works by moving you to the Mom's Heart boss fight (or Ultra Greed boss figh
 
 This command doesn't work if you're in a challenge, seeded run, or victory lap. You also need to have beaten Mom once.
 
-This can unlock Eden, and other Mom's Heart (or Ultra Greed) related things.</description>
-    <version>1.5</version>
+This can unlock Eden, and other Mom's Heart (or Ultra Greed) related things.
+
+[hr][/hr]
+This mod is now enhanced with REPENTOGON support. Press the tilde key to open the new debug console and menu. There's a new Shenanigans option that will let you set Win Streak, Best Win Streak, and Eden Tokens. You can set Win Streak and Eden Tokens directly overtop the character select carousel. Watch it update the UI in real-time. Best Win Streak might not save unless you start a new run.</description>
+    <version>1.6</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Tweaks"/>

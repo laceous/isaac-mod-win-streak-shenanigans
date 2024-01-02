@@ -60,3 +60,71 @@ function mod:onExecuteCmd(cmd, parameters)
 end
 
 mod:AddCallback(ModCallbacks.MC_EXECUTE_CMD, mod.onExecuteCmd)
+
+----------------------
+-- start repentogon --
+----------------------
+if REPENTOGON then
+  -- imgui
+  ImGui.CreateMenu('shenanigansMenu', '\u{f6d1} Shenanigans')
+  ImGui.AddElement('shenanigansMenu', 'shenanigansMenuItem', ImGuiElement.MenuItem, '\u{f528} Win Streak Shenanigans (+Eden Tokens)')
+  ImGui.CreateWindow('shenanigansWindow', 'Win Streak Shenanigans (+Eden Tokens)')
+  ImGui.LinkWindowToElement('shenanigansWindow', 'shenanigansMenuItem')
+  
+  ImGui.AddTabBar('shenanigansWindow', 'shenanigansTabBar')
+  ImGui.AddTab('shenanigansTabBar', 'shenanigansTabWinStreak', 'Win Streak')
+  ImGui.AddTab('shenanigansTabBar', 'shenanigansTabEdenTokens', 'Eden Tokens')
+  
+  ImGui.AddText('shenanigansTabWinStreak', 'Win Streak:', false, 'shenanigansTxt1')
+  ImGui.AddInputInteger('shenanigansTabWinStreak', 'shenanigansWinStreak', 'Edit', nil, 0, 1, 100) -- callback doesn't work here :(
+  ImGui.AddCallback('shenanigansWinStreak', ImGuiCallback.Render, function(num)
+    local gameData = Isaac.GetPersistentGameData()
+    local streakCounter = gameData:GetEventCounter(EventCounter.STREAK_COUNTER)
+    if streakCounter == 0 then
+      streakCounter = gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER) * -1
+    end
+    ImGui.UpdateData('shenanigansWinStreak', ImGuiData.Value, streakCounter)
+  end)
+  ImGui.AddCallback('shenanigansWinStreak', ImGuiCallback.Edited, function(num)
+    local gameData = Isaac.GetPersistentGameData()
+    if num > 0 then
+      gameData:IncreaseEventCounter(EventCounter.STREAK_COUNTER, num - gameData:GetEventCounter(EventCounter.STREAK_COUNTER))
+      gameData:IncreaseEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER, gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER) * -1)
+    elseif num < 0 then
+      gameData:IncreaseEventCounter(EventCounter.STREAK_COUNTER, gameData:GetEventCounter(EventCounter.STREAK_COUNTER) * -1)
+      gameData:IncreaseEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER, math.abs(num) - gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER))
+    else -- equals 0
+      gameData:IncreaseEventCounter(EventCounter.STREAK_COUNTER, gameData:GetEventCounter(EventCounter.STREAK_COUNTER) * -1)
+      gameData:IncreaseEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER, gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER) * -1)
+    end
+  end)
+  
+  ImGui.AddText('shenanigansTabWinStreak', 'Best Win Streak:', false, 'shenanigansTxt2')
+  ImGui.AddInputInteger('shenanigansTabWinStreak', 'shenanigansBestWinStreak', 'Edit', nil, 0, 1, 100)
+  ImGui.AddCallback('shenanigansBestWinStreak', ImGuiCallback.Render, function(num)
+    local gameData = Isaac.GetPersistentGameData()
+    ImGui.UpdateData('shenanigansBestWinStreak', ImGuiData.Value, gameData:GetEventCounter(EventCounter.BEST_STREAK))
+  end)
+  ImGui.AddCallback('shenanigansBestWinStreak', ImGuiCallback.Edited, function(num)
+    local gameData = Isaac.GetPersistentGameData()
+    gameData:IncreaseEventCounter(EventCounter.BEST_STREAK, num - gameData:GetEventCounter(EventCounter.BEST_STREAK))
+  end)
+  
+  ImGui.AddText('shenanigansTabEdenTokens', 'Eden Tokens:', false, 'shenanigansTxt3')
+  ImGui.AddInputInteger('shenanigansTabEdenTokens', 'shenanigansEdenTokens', 'Edit', nil, 0, 1, 100)
+  ImGui.AddCallback('shenanigansEdenTokens', ImGuiCallback.Render, function(num)
+    local gameData = Isaac.GetPersistentGameData()
+    ImGui.UpdateData('shenanigansEdenTokens', ImGuiData.Value, gameData:GetEventCounter(EventCounter.EDEN_TOKENS))
+  end)
+  ImGui.AddCallback('shenanigansEdenTokens', ImGuiCallback.Edited, function(num)
+    local gameData = Isaac.GetPersistentGameData()
+    gameData:IncreaseEventCounter(EventCounter.EDEN_TOKENS, num - gameData:GetEventCounter(EventCounter.EDEN_TOKENS))
+  end)
+  
+  -- console
+  Console.RegisterCommand('win-streak', 'Increment your win streak (win-streak +1)', 'Increment your win streak (win-streak +1)', false, AutocompleteType.NONE)
+  Console.RegisterCommand('eden-tokens', 'Increment your eden tokens (eden-tokens +1)', 'Increment your eden tokens (eden-tokens +1)', false, AutocompleteType.NONE)
+end
+--------------------
+-- end repentogon --
+--------------------
