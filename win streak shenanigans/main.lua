@@ -11,7 +11,7 @@ function mod:onExecuteCmd(cmd, parameters)
   cmd = string.lower(cmd)
   
   if cmd == 'win-streak' then
-    if not seeds:IsCustomRun() then -- not challenge or seeded run
+    if mod:isInGame() and not seeds:IsCustomRun() then -- not challenge or seeded run
       if string.len(parameters) >= 2 and string.sub(parameters, 1, 1) == '+' then
         local num = tonumber(string.sub(parameters, 2))
         
@@ -28,7 +28,7 @@ function mod:onExecuteCmd(cmd, parameters)
     
     print('+0')
   elseif cmd == 'eden-tokens' then
-    if not seeds:IsCustomRun() and game:GetVictoryLap() == 0 then -- not challenge, seeded run, or victory lap
+    if mod:isInGame() and not seeds:IsCustomRun() and game:GetVictoryLap() == 0 then -- not challenge, seeded run, or victory lap
       if string.len(parameters) >= 2 and string.sub(parameters, 1, 1) == '+' then
         local num = tonumber(string.sub(parameters, 2))
         
@@ -59,6 +59,14 @@ function mod:onExecuteCmd(cmd, parameters)
   end
 end
 
+function mod:isInGame()
+  if REPENTOGON then
+    return Isaac.IsInGame()
+  end
+  
+  return true
+end
+
 mod:AddCallback(ModCallbacks.MC_EXECUTE_CMD, mod.onExecuteCmd)
 
 ----------------------
@@ -66,64 +74,72 @@ mod:AddCallback(ModCallbacks.MC_EXECUTE_CMD, mod.onExecuteCmd)
 ----------------------
 if REPENTOGON then
   -- imgui
-  ImGui.CreateMenu('shenanigansMenu', '\u{f6d1} Shenanigans')
-  ImGui.AddElement('shenanigansMenu', 'shenanigansMenuItem', ImGuiElement.MenuItem, '\u{f528} Win Streak Shenanigans (+Eden Tokens)')
-  ImGui.CreateWindow('shenanigansWindow', 'Win Streak Shenanigans (+Eden Tokens)')
-  ImGui.LinkWindowToElement('shenanigansWindow', 'shenanigansMenuItem')
-  
-  ImGui.AddTabBar('shenanigansWindow', 'shenanigansTabBar')
-  ImGui.AddTab('shenanigansTabBar', 'shenanigansTabWinStreak', 'Win Streak')
-  ImGui.AddTab('shenanigansTabBar', 'shenanigansTabEdenTokens', 'Eden Tokens')
-  
-  ImGui.AddText('shenanigansTabWinStreak', 'Win Streak:', false, 'shenanigansTxt1')
-  ImGui.AddInputInteger('shenanigansTabWinStreak', 'shenanigansWinStreak', 'Edit', nil, 0, 1, 100) -- callback doesn't work here :(
-  ImGui.AddCallback('shenanigansWinStreak', ImGuiCallback.Render, function(num)
-    local gameData = Isaac.GetPersistentGameData()
-    local streakCounter = gameData:GetEventCounter(EventCounter.STREAK_COUNTER)
-    if streakCounter == 0 then
-      streakCounter = gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER) * -1
+  function mod:setupImGui()
+    if not ImGui.ElementExists('shenanigansMenu') then
+      ImGui.CreateMenu('shenanigansMenu', '\u{f6d1} Shenanigans')
     end
-    ImGui.UpdateData('shenanigansWinStreak', ImGuiData.Value, streakCounter)
-  end)
-  ImGui.AddCallback('shenanigansWinStreak', ImGuiCallback.Edited, function(num)
-    local gameData = Isaac.GetPersistentGameData()
-    if num > 0 then
-      gameData:IncreaseEventCounter(EventCounter.STREAK_COUNTER, num - gameData:GetEventCounter(EventCounter.STREAK_COUNTER))
-      gameData:IncreaseEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER, gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER) * -1)
-    elseif num < 0 then
-      gameData:IncreaseEventCounter(EventCounter.STREAK_COUNTER, gameData:GetEventCounter(EventCounter.STREAK_COUNTER) * -1)
-      gameData:IncreaseEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER, math.abs(num) - gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER))
-    else -- equals 0
-      gameData:IncreaseEventCounter(EventCounter.STREAK_COUNTER, gameData:GetEventCounter(EventCounter.STREAK_COUNTER) * -1)
-      gameData:IncreaseEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER, gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER) * -1)
+    ImGui.AddElement('shenanigansMenu', 'shenanigansMenuItemWinStreak', ImGuiElement.MenuItem, '\u{f527} Win Streak Shenanigans (+Eden Tokens)')
+    ImGui.CreateWindow('shenanigansWindowWinStreak', 'Win Streak Shenanigans (+Eden Tokens)')
+    ImGui.LinkWindowToElement('shenanigansWindowWinStreak', 'shenanigansMenuItemWinStreak')
+    
+    ImGui.AddTabBar('shenanigansWindowWinStreak', 'shenanigansTabBarWinStreak')
+    ImGui.AddTab('shenanigansTabBarWinStreak', 'shenanigansTabWinStreak', 'Win Streak')
+    ImGui.AddTab('shenanigansTabBarWinStreak', 'shenanigansTabDailyStreak', 'Daily Streak')
+    ImGui.AddTab('shenanigansTabBarWinStreak', 'shenanigansTabEdenTokens', 'Eden Tokens')
+    
+    ImGui.AddText('shenanigansTabWinStreak', 'Win Streak:', false)
+    ImGui.AddInputInteger('shenanigansTabWinStreak', 'shenanigansIntWinStreak', '', nil, 0, 1, 100)
+    ImGui.AddCallback('shenanigansIntWinStreak', ImGuiCallback.Render, function()
+      local gameData = Isaac.GetPersistentGameData()
+      local streakCounter = gameData:GetEventCounter(EventCounter.STREAK_COUNTER)
+      if streakCounter == 0 then
+        streakCounter = gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER) * -1
+      end
+      ImGui.UpdateData('shenanigansIntWinStreak', ImGuiData.Value, streakCounter)
+    end)
+    ImGui.AddCallback('shenanigansIntWinStreak', ImGuiCallback.Edited, function(num)
+      local gameData = Isaac.GetPersistentGameData()
+      if num > 0 then
+        gameData:IncreaseEventCounter(EventCounter.STREAK_COUNTER, num - gameData:GetEventCounter(EventCounter.STREAK_COUNTER))
+        gameData:IncreaseEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER, gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER) * -1)
+      elseif num < 0 then
+        gameData:IncreaseEventCounter(EventCounter.STREAK_COUNTER, gameData:GetEventCounter(EventCounter.STREAK_COUNTER) * -1)
+        gameData:IncreaseEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER, math.abs(num) - gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER))
+      else -- equals 0
+        gameData:IncreaseEventCounter(EventCounter.STREAK_COUNTER, gameData:GetEventCounter(EventCounter.STREAK_COUNTER) * -1)
+        gameData:IncreaseEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER, gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER) * -1)
+      end
+    end)
+    
+    for _, v in ipairs({
+                        { tab = 'shenanigansTabWinStreak'  , text = 'Best Win Streak:', field = 'shenanigansIntBestWinStreak', counter = EventCounter.BEST_STREAK },
+                        { tab = 'shenanigansTabDailyStreak', text = 'Daily Streak:'   , field = 'shenanigansIntDailysStreak' , counter = EventCounter.DAILYS_STREAK },
+                        { tab = 'shenanigansTabDailyStreak', text = 'Total Played:'   , field = 'shenanigansIntDailysPlayed' , counter = EventCounter.DAILYS_PLAYED },
+                        { tab = 'shenanigansTabDailyStreak', text = 'Total Won:'      , field = 'shenanigansIntDailysWon'    , counter = EventCounter.DAILYS_WON },
+                        { tab = 'shenanigansTabEdenTokens' , text = 'Eden Tokens:'    , field = 'shenanigansIntEdenTokens'   , counter = EventCounter.EDEN_TOKENS },
+                      })
+    do
+      ImGui.AddText(v.tab, v.text, false)
+      ImGui.AddInputInteger(v.tab, v.field, '', nil, 0, 1, 100)
+      ImGui.AddCallback(v.field, ImGuiCallback.Render, function()
+        local gameData = Isaac.GetPersistentGameData()
+        ImGui.UpdateData(v.field, ImGuiData.Value, gameData:GetEventCounter(v.counter))
+      end)
+      ImGui.AddCallback(v.field, ImGuiCallback.Edited, function(num)
+        local gameData = Isaac.GetPersistentGameData()
+        gameData:IncreaseEventCounter(v.counter, num - gameData:GetEventCounter(v.counter))
+      end)
     end
-  end)
-  
-  ImGui.AddText('shenanigansTabWinStreak', 'Best Win Streak:', false, 'shenanigansTxt2')
-  ImGui.AddInputInteger('shenanigansTabWinStreak', 'shenanigansBestWinStreak', 'Edit', nil, 0, 1, 100)
-  ImGui.AddCallback('shenanigansBestWinStreak', ImGuiCallback.Render, function(num)
-    local gameData = Isaac.GetPersistentGameData()
-    ImGui.UpdateData('shenanigansBestWinStreak', ImGuiData.Value, gameData:GetEventCounter(EventCounter.BEST_STREAK))
-  end)
-  ImGui.AddCallback('shenanigansBestWinStreak', ImGuiCallback.Edited, function(num)
-    local gameData = Isaac.GetPersistentGameData()
-    gameData:IncreaseEventCounter(EventCounter.BEST_STREAK, num - gameData:GetEventCounter(EventCounter.BEST_STREAK))
-  end)
-  
-  ImGui.AddText('shenanigansTabEdenTokens', 'Eden Tokens:', false, 'shenanigansTxt3')
-  ImGui.AddInputInteger('shenanigansTabEdenTokens', 'shenanigansEdenTokens', 'Edit', nil, 0, 1, 100)
-  ImGui.AddCallback('shenanigansEdenTokens', ImGuiCallback.Render, function(num)
-    local gameData = Isaac.GetPersistentGameData()
-    ImGui.UpdateData('shenanigansEdenTokens', ImGuiData.Value, gameData:GetEventCounter(EventCounter.EDEN_TOKENS))
-  end)
-  ImGui.AddCallback('shenanigansEdenTokens', ImGuiCallback.Edited, function(num)
-    local gameData = Isaac.GetPersistentGameData()
-    gameData:IncreaseEventCounter(EventCounter.EDEN_TOKENS, num - gameData:GetEventCounter(EventCounter.EDEN_TOKENS))
-  end)
+  end
   
   -- console
-  Console.RegisterCommand('win-streak', 'Increment your win streak (win-streak +1)', 'Increment your win streak (win-streak +1)', false, AutocompleteType.NONE)
-  Console.RegisterCommand('eden-tokens', 'Increment your eden tokens (eden-tokens +1)', 'Increment your eden tokens (eden-tokens +1)', false, AutocompleteType.NONE)
+  function mod:registerCommands()
+    Console.RegisterCommand('win-streak', 'Increment your win streak (win-streak +1)', 'Increment your win streak (win-streak +1)', false, AutocompleteType.NONE)
+    Console.RegisterCommand('eden-tokens', 'Increment your eden tokens (eden-tokens +1)', 'Increment your eden tokens (eden-tokens +1)', false, AutocompleteType.NONE)
+  end
+  
+  mod:setupImGui()
+  mod:registerCommands()
 end
 --------------------
 -- end repentogon --
