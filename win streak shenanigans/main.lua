@@ -73,6 +73,11 @@ mod:AddCallback(ModCallbacks.MC_EXECUTE_CMD, mod.onExecuteCmd)
 -- start repentogon --
 ----------------------
 if REPENTOGON then
+  function mod:onSaveSlotLoad()
+    mod:RemoveCallback(ModCallbacks.MC_POST_SAVESLOT_LOAD, mod.onSaveSlotLoad)
+    mod:setupImGui()
+  end
+  
   -- imgui
   function mod:setupImGui()
     if not ImGui.ElementExists('shenanigansMenu') then
@@ -138,8 +143,8 @@ if REPENTOGON then
     Console.RegisterCommand('eden-tokens', 'Increment your eden tokens (eden-tokens +1)', 'Increment your eden tokens (eden-tokens +1)', false, AutocompleteType.NONE)
   end
   
-  mod:setupImGui()
   mod:registerCommands()
+  mod:AddCallback(ModCallbacks.MC_POST_SAVESLOT_LOAD, mod.onSaveSlotLoad)
 end
 --------------------
 -- end repentogon --
