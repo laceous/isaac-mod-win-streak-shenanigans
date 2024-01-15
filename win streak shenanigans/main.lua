@@ -73,8 +73,9 @@ mod:AddCallback(ModCallbacks.MC_EXECUTE_CMD, mod.onExecuteCmd)
 -- start repentogon --
 ----------------------
 if REPENTOGON then
-  function mod:onSaveSlotLoad()
-    mod:RemoveCallback(ModCallbacks.MC_POST_SAVESLOT_LOAD, mod.onSaveSlotLoad)
+  function mod:onRender()
+    mod:RemoveCallback(ModCallbacks.MC_MAIN_MENU_RENDER, mod.onRender)
+    mod:RemoveCallback(ModCallbacks.MC_POST_RENDER, mod.onRender)
     mod:setupImGui()
   end
   
@@ -144,7 +145,8 @@ if REPENTOGON then
   end
   
   mod:registerCommands()
-  mod:AddCallback(ModCallbacks.MC_POST_SAVESLOT_LOAD, mod.onSaveSlotLoad)
+  mod:AddCallback(ModCallbacks.MC_MAIN_MENU_RENDER, mod.onRender)
+  mod:AddCallback(ModCallbacks.MC_POST_RENDER, mod.onRender)
 end
 --------------------
 -- end repentogon --
