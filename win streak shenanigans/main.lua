@@ -84,7 +84,7 @@ if REPENTOGON then
     if not ImGui.ElementExists('shenanigansMenu') then
       ImGui.CreateMenu('shenanigansMenu', '\u{f6d1} Shenanigans')
     end
-    ImGui.AddElement('shenanigansMenu', 'shenanigansMenuItemWinStreak', ImGuiElement.MenuItem, '\u{f527} Win Streak Shenanigans (+Eden Tokens)')
+    ImGui.AddElement('shenanigansMenu', 'shenanigansMenuItemWinStreak', ImGuiElement.MenuItem, '\u{f11e} Win Streak Shenanigans (+Eden Tokens)')
     ImGui.CreateWindow('shenanigansWindowWinStreak', 'Win Streak Shenanigans (+Eden Tokens)')
     ImGui.LinkWindowToElement('shenanigansWindowWinStreak', 'shenanigansMenuItemWinStreak')
     
