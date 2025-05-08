@@ -36,7 +36,7 @@ This can unlock Eden, and other Mom's Heart (or Ultra Greed) related things.
 This mod is now enhanced with REPENTOGON support. Press the tilde key to open the new debug console and menu. There's a new Shenanigans option that will let you set Win Streak, Best Win Streak, and Eden Tokens. You can set Win Streak and Eden Tokens directly overtop the character select carousel. Watch it update the UI in real-time. Best Win Streak might not save unless you start a new run.
 
 Daily Streak options have also been added.</description>
-    <version>1.10</version>
+    <version>1.11</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Tweaks"/>

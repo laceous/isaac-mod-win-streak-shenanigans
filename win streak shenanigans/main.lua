@@ -73,17 +73,18 @@ mod:AddCallback(ModCallbacks.MC_EXECUTE_CMD, mod.onExecuteCmd)
 -- start repentogon --
 ----------------------
 if REPENTOGON then
-  function mod:onRender()
-    mod:RemoveCallback(ModCallbacks.MC_MAIN_MENU_RENDER, mod.onRender)
-    mod:RemoveCallback(ModCallbacks.MC_POST_RENDER, mod.onRender)
+  function mod:onModsLoaded()
     mod:setupImGui()
   end
   
   -- imgui
-  function mod:setupImGui()
+  function mod:setupImGuiMenu()
     if not ImGui.ElementExists('shenanigansMenu') then
       ImGui.CreateMenu('shenanigansMenu', '\u{f6d1} Shenanigans')
     end
+  end
+  
+  function mod:setupImGui()
     ImGui.AddElement('shenanigansMenu', 'shenanigansMenuItemWinStreak', ImGuiElement.MenuItem, '\u{f11e} Win Streak Shenanigans (+Eden Tokens)')
     ImGui.CreateWindow('shenanigansWindowWinStreak', 'Win Streak Shenanigans (+Eden Tokens)')
     ImGui.LinkWindowToElement('shenanigansWindowWinStreak', 'shenanigansMenuItemWinStreak')
@@ -145,8 +146,8 @@ if REPENTOGON then
   end
   
   mod:registerCommands()
-  mod:AddCallback(ModCallbacks.MC_MAIN_MENU_RENDER, mod.onRender)
-  mod:AddCallback(ModCallbacks.MC_POST_RENDER, mod.onRender)
+  mod:setupImGuiMenu()
+  mod:AddCallback(ModCallbacks.MC_POST_MODS_LOADED, mod.onModsLoaded)
 end
 --------------------
 -- end repentogon --
