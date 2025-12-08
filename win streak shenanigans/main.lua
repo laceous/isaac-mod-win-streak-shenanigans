@@ -92,38 +92,45 @@ if REPENTOGON then
     ImGui.AddTabBar('shenanigansWindowWinStreak', 'shenanigansTabBarWinStreak')
     ImGui.AddTab('shenanigansTabBarWinStreak', 'shenanigansTabWinStreak', 'Win Streak')
     ImGui.AddTab('shenanigansTabBarWinStreak', 'shenanigansTabDailyStreak', 'Daily Streak')
+    ImGui.AddTab('shenanigansTabBarWinStreak', 'shenanigansTabOnlineStreak', 'Online Streak')
     ImGui.AddTab('shenanigansTabBarWinStreak', 'shenanigansTabEdenTokens', 'Eden Tokens')
     
-    ImGui.AddText('shenanigansTabWinStreak', 'Win Streak:', false)
-    ImGui.AddInputInteger('shenanigansTabWinStreak', 'shenanigansIntWinStreak', '', nil, 0, 1, 100)
-    ImGui.AddCallback('shenanigansIntWinStreak', ImGuiCallback.Render, function()
-      local gameData = Isaac.GetPersistentGameData()
-      local streakCounter = gameData:GetEventCounter(EventCounter.STREAK_COUNTER)
-      if streakCounter == 0 then
-        streakCounter = gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER) * -1
-      end
-      ImGui.UpdateData('shenanigansIntWinStreak', ImGuiData.Value, streakCounter)
-    end)
-    ImGui.AddCallback('shenanigansIntWinStreak', ImGuiCallback.Edited, function(num)
-      local gameData = Isaac.GetPersistentGameData()
-      if num > 0 then
-        gameData:IncreaseEventCounter(EventCounter.STREAK_COUNTER, num - gameData:GetEventCounter(EventCounter.STREAK_COUNTER))
-        gameData:IncreaseEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER, gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER) * -1)
-      elseif num < 0 then
-        gameData:IncreaseEventCounter(EventCounter.STREAK_COUNTER, gameData:GetEventCounter(EventCounter.STREAK_COUNTER) * -1)
-        gameData:IncreaseEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER, math.abs(num) - gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER))
-      else -- equals 0
-        gameData:IncreaseEventCounter(EventCounter.STREAK_COUNTER, gameData:GetEventCounter(EventCounter.STREAK_COUNTER) * -1)
-        gameData:IncreaseEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER, gameData:GetEventCounter(EventCounter.NEGATIVE_STREAK_COUNTER) * -1)
-      end
-    end)
+    for _, v in ipairs({
+                        { tab = 'shenanigansTabWinStreak'   , text = 'Win Streak:'   , field = 'shenanigansIntWinStreak'   , counter = EventCounter.STREAK_COUNTER       , negCounter = EventCounter.NEGATIVE_STREAK_COUNTER },
+                        { tab = 'shenanigansTabDailyStreak' , text = 'Daily Streak:' , field = 'shenanigansIntDailyStreak' , counter = EventCounter.DAILYS_STREAK        , negCounter = EventCounter.DAILYS_NEGATIVE_STREAK },
+                        { tab = 'shenanigansTabOnlineStreak', text = 'Online Streak:', field = 'shenanigansIntOnlineStreak', counter = EventCounter.ONLINE_CURRENT_STREAK, negCounter = 499 }, -- UNKNOWN_EVENT_499
+                      })
+    do
+      ImGui.AddText(v.tab, v.text, false)
+      ImGui.AddInputInteger(v.tab, v.field, '', nil, 0, 1, 100)
+      ImGui.AddCallback(v.field, ImGuiCallback.Render, function()
+        local gameData = Isaac.GetPersistentGameData()
+        local streakCounter = gameData:GetEventCounter(v.counter)
+        if streakCounter == 0 then
+          streakCounter = gameData:GetEventCounter(v.negCounter) * -1
+        end
+        ImGui.UpdateData(v.field, ImGuiData.Value, streakCounter)
+      end)
+      ImGui.AddCallback(v.field, ImGuiCallback.Edited, function(num)
+        local gameData = Isaac.GetPersistentGameData()
+        if num > 0 then
+          gameData:IncreaseEventCounter(v.counter, num - gameData:GetEventCounter(v.counter))
+          gameData:IncreaseEventCounter(v.negCounter, gameData:GetEventCounter(v.negCounter) * -1)
+        elseif num < 0 then
+          gameData:IncreaseEventCounter(v.counter, gameData:GetEventCounter(v.counter) * -1)
+          gameData:IncreaseEventCounter(v.negCounter, math.abs(num) - gameData:GetEventCounter(v.negCounter))
+        else -- equals 0
+          gameData:IncreaseEventCounter(v.counter, gameData:GetEventCounter(v.counter) * -1)
+          gameData:IncreaseEventCounter(v.negCounter, gameData:GetEventCounter(v.negCounter) * -1)
+        end
+      end)
+    end
     
     for _, v in ipairs({
-                        { tab = 'shenanigansTabWinStreak'  , text = 'Best Win Streak:', field = 'shenanigansIntBestWinStreak', counter = EventCounter.BEST_STREAK },
-                        { tab = 'shenanigansTabDailyStreak', text = 'Daily Streak:'   , field = 'shenanigansIntDailysStreak' , counter = EventCounter.DAILYS_STREAK },
-                        { tab = 'shenanigansTabDailyStreak', text = 'Total Played:'   , field = 'shenanigansIntDailysPlayed' , counter = EventCounter.DAILYS_PLAYED },
-                        { tab = 'shenanigansTabDailyStreak', text = 'Total Won:'      , field = 'shenanigansIntDailysWon'    , counter = EventCounter.DAILYS_WON },
-                        { tab = 'shenanigansTabEdenTokens' , text = 'Eden Tokens:'    , field = 'shenanigansIntEdenTokens'   , counter = EventCounter.EDEN_TOKENS },
+                        { tab = 'shenanigansTabWinStreak'   , text = 'Best Win Streak:'   , field = 'shenanigansIntBestWinStreak'   , counter = EventCounter.BEST_STREAK },
+                        { tab = 'shenanigansTabDailyStreak' , text = 'Best Daily Streak:' , field = 'shenanigansIntBestDailyStreak' , counter = EventCounter.DAILYS_BEST_STREAK },
+                        { tab = 'shenanigansTabOnlineStreak', text = 'Best Online Streak:', field = 'shenanigansIntBestOnlineStreak', counter = EventCounter.ONLINE_BEST_STREAK },
+                        { tab = 'shenanigansTabEdenTokens'  , text = 'Eden Tokens:'       , field = 'shenanigansIntEdenTokens'      , counter = EventCounter.EDEN_TOKENS },
                       })
     do
       ImGui.AddText(v.tab, v.text, false)
