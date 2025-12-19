@@ -98,7 +98,7 @@ if REPENTOGON then
     for _, v in ipairs({
                         { tab = 'shenanigansTabWinStreak'   , text = 'Win Streak:'   , field = 'shenanigansIntWinStreak'   , counter = EventCounter.STREAK_COUNTER       , negCounter = EventCounter.NEGATIVE_STREAK_COUNTER },
                         { tab = 'shenanigansTabDailyStreak' , text = 'Daily Streak:' , field = 'shenanigansIntDailyStreak' , counter = EventCounter.DAILYS_STREAK        , negCounter = EventCounter.DAILYS_NEGATIVE_STREAK },
-                        { tab = 'shenanigansTabOnlineStreak', text = 'Online Streak:', field = 'shenanigansIntOnlineStreak', counter = EventCounter.ONLINE_CURRENT_STREAK, negCounter = 499 }, -- UNKNOWN_EVENT_499
+                        { tab = 'shenanigansTabOnlineStreak', text = 'Online Streak:', field = 'shenanigansIntOnlineStreak', counter = EventCounter.ONLINE_CURRENT_STREAK, negCounter = EventCounter.ONLINE_NEGATIVE_STREAK },
                       })
     do
       ImGui.AddText(v.tab, v.text, false)
